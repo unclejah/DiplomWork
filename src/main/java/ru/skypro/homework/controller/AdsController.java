@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ public class AdsController {
      * Добавление объявления.
      */
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Ads> addAds(@RequestPart("properties") CreateAds createAds,
                                       @RequestPart("image") MultipartFile file) {
         return ResponseEntity.ok().build();
@@ -81,7 +82,7 @@ public class AdsController {
      **/
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Ads> updateAds(@PathVariable int id, @RequestPart("properties")  CreateAds ads) {
+    public ResponseEntity<Ads> updateAds(@PathVariable int id, @RequestBody CreateAds ads) {
             return ResponseEntity.ok().build();
         }
     /**

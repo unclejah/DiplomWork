@@ -25,7 +25,7 @@ public class UserController {
      **/
 
     @PostMapping("/set_password")
-    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword currentPassword,@RequestBody NewPassword newPassword) {
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword) {
         return ResponseEntity.ok().build();
 
     }
@@ -48,7 +48,7 @@ public class UserController {
      */
 
     @PostMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<User> uploaduserImage(@RequestParam MultipartFile userPicture) {
+    public ResponseEntity<User> uploadUserImage(@RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 

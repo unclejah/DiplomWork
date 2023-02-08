@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/image")
-public class PictureController {
+public class ImageController {
 
 
     /**
@@ -19,8 +19,8 @@ public class PictureController {
      */
 
     @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadAdsPicture(@PathVariable  Long id,
-                                                       @RequestParam MultipartFile adsPicture) {
+    public ResponseEntity<String> uploadAdsImage(@PathVariable  Long id,
+                                                       @RequestParam MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 
