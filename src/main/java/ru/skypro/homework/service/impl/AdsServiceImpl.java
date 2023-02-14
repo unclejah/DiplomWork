@@ -70,7 +70,7 @@ public class AdsServiceImpl  implements AdsService {
         Comment adsComment = new Comment();
         adsComment.setAuthor(userRepository.findById(1).orElseThrow(UserNotFoundException::new));
         adsComment.setPk(adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new));
-        adsComment.setCreatedAt(OffsetDateTime.now());
+        adsComment.setCreatedAt(OffsetDateTime.now().toString());
         adsComment.setText(adsCommentDto.getText());
         adsCommentRepository.save(adsComment);
         return adsCommentDto;
@@ -126,14 +126,14 @@ public class AdsServiceImpl  implements AdsService {
             adsComment.setAuthor(userRepository.findById(adsCommentDto.getAuthor()).orElseThrow(UserNotFoundException::new));
             adsComment.setPk(ads);
             adsComment.setText(adsCommentDto.getText());
-            adsComment.setCreatedAt(OffsetDateTime.now());
+            adsComment.setCreatedAt(OffsetDateTime.now().toString());
             adsCommentRepository.save(adsComment);
             return adsCommentDto;
 
     }
     @Override
     public ResponseWrapperAdsDto getAdsMe(Principal principal) {
-        User user = userRepository.findByUsername(principal.getName());
+        User user = userRepository.findByFirstName(principal.getName());
         List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
         return getResponseWrapperAds(adsList);
     }

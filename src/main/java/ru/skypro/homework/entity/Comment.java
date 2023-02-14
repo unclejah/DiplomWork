@@ -17,6 +17,6 @@ public class Comment {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "ads_id")
     private Ads pk;
-    private OffsetDateTime createdAt;
+    private String createdAt;
     private String text;
 }

@@ -18,7 +18,6 @@ import java.security.Principal;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/ads")
 public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
