@@ -1,13 +1,16 @@
 package ru.skypro.homework.dto;
 
-public class FullAds {
+import lombok.Data;
+
+@Data
+public class FullAdsDto {
     private String authorFirstName;
     private String authorLastName;
     private String description;
     private String email;
     private String image;
     private String phone;
-    private Long pk;
-    private Long price;
+    private int pk;
+    private int price;
     private String title;
 }
