@@ -1,9 +1,11 @@
 package ru.skypro.homework.service;
 
-import ru.skypro.homework.dto.UserDTO;
+import ru.skypro.homework.dto.UserDto;
+
+import java.security.Principal;
 
 public interface UserService {
-    UserDTO updateUser(UserDTO userDto);
+    UserDto updateUser(UserDto userDto, Principal principal);
 
-    UserDTO getUser(int id);
+    UserDto getUser(String email);
 }
