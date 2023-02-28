@@ -1,10 +1,10 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
-import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity(name = "users")
@@ -20,9 +20,14 @@ public class User {
     private String city;
     private String image;
     private String password;
-    private Role role;
     @OneToMany
     List<Ads> adsList;
     @OneToMany
     List<Comment> commentList;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
 }

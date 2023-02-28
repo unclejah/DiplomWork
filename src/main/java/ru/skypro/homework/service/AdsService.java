@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 
@@ -7,7 +8,7 @@ import java.security.Principal;
 
 public interface AdsService {
     ResponseWrapperAdsDto getAllAds();
-    AdsDto createAds(CreateAdsDto createAds, MultipartFile file);
+    AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication);
     ResponseWrapperCommentDto getAdsComments(int pk);
     CommentDto addAdsComment(int pk, CommentDto adsCommentDto);
     FullAdsDto getAds(int id);

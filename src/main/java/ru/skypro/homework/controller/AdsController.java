@@ -1,31 +1,33 @@
 package ru.skypro.homework.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
-import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.service.AdsService;
 
 import java.security.Principal;
+import java.util.Collections;
+
 
 @Slf4j
+@RequestMapping("/ads")
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
-@RequestMapping("/ads")
 public class AdsController {
-    private final Logger logger = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
 
     public AdsController(AdsService adsService) {
         this.adsService = adsService;
     }
+
       /**
      * Получить все существующие объявления GET <a href="http://localhost:3000/ads">...</a>
      **/
@@ -34,7 +36,7 @@ public class AdsController {
     public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
         ResponseWrapperAdsDto allAds = adsService.getAllAds();
         if (allAds.getCount() == 0) {
-            return ResponseEntity.notFound().build();
+            allAds.setResults(Collections.emptyList());
         }
         return ResponseEntity.ok(allAds);
     }
@@ -50,9 +52,8 @@ public class AdsController {
         if (createAds == null) {
             return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok(adsService.createAds(createAds, file));
-//        return ResponseEntity.ok().build();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ResponseEntity.ok(adsService.createAds(createAds, file, authentication));
     }
 
     /**
@@ -174,6 +175,9 @@ public class AdsController {
         @GetMapping("/me")
         public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(Principal principal) {
             ResponseWrapperAdsDto Ads = adsService.getAdsMe(principal);
+            if (Ads.getCount() == 0) {
+                Ads.setResults(Collections.emptyList());
+            }
             return ResponseEntity.ok(Ads);
         }
 }

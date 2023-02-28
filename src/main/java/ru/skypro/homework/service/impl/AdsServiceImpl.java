@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
@@ -25,10 +26,12 @@ public class AdsServiceImpl  implements AdsService {
     private final AdsMapper mapper = Mappers.getMapper(AdsMapper.class);
     private final CommentRepository adsCommentRepository;
     private final UserRepository userRepository;
-    public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository) {
+    private final ImageServiceImpl imageServiceImpl;
+    public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository, ImageServiceImpl imageServiceImpl) {
         this.adsRepository = adsRepository;
         this.adsCommentRepository = adsCommentRepository;
         this.userRepository = userRepository;
+        this.imageServiceImpl = imageServiceImpl;
     }
     @Override
     public ResponseWrapperAdsDto getAllAds() {
@@ -46,8 +49,13 @@ public class AdsServiceImpl  implements AdsService {
     }
 
     @Override
-    public AdsDto createAds(CreateAdsDto createAds, MultipartFile file) {
+    public AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication) {
+//        Ads ads = mapper.createAdsToAds(createAds);
+//        adsRepository.save(ads);
+//        return mapper.adsToAdsDto(ads);
         Ads ads = mapper.createAdsToAds(createAds);
+        ads.setAuthor(userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
+        ads.setImage("/image/" + imageServiceImpl.saveImage(file));
         adsRepository.save(ads);
         return mapper.adsToAdsDto(ads);
     }
@@ -133,7 +141,7 @@ public class AdsServiceImpl  implements AdsService {
     }
     @Override
     public ResponseWrapperAdsDto getAdsMe(Principal principal) {
-        User user = userRepository.findByFirstName(principal.getName());
+        User user = userRepository.findByEmail(principal.getName());
         List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
         return getResponseWrapperAds(adsList);
     }
