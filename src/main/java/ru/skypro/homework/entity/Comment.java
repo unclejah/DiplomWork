@@ -10,11 +10,11 @@ import java.time.OffsetDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private int id;
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User author;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "ads_id")
     private Ads pk;
     private String createdAt;

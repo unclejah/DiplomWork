@@ -8,9 +8,11 @@ import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
+import ru.skypro.homework.exception.NoAccessException;
 import ru.skypro.homework.mapper.AdsMapper;
 import ru.skypro.homework.repository.AdsRepository;
 import ru.skypro.homework.repository.CommentRepository;
+import ru.skypro.homework.repository.ImageRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.exception.AdsNotFoundException;
@@ -19,6 +21,7 @@ import ru.skypro.homework.exception.AdsCommentNotFoundException;
 
 import java.security.Principal;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 @Service
 public class AdsServiceImpl  implements AdsService {
@@ -26,12 +29,14 @@ public class AdsServiceImpl  implements AdsService {
     private final AdsMapper mapper = Mappers.getMapper(AdsMapper.class);
     private final CommentRepository adsCommentRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final ImageServiceImpl imageServiceImpl;
-    public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository, ImageServiceImpl imageServiceImpl) {
+    public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository, ImageServiceImpl imageServiceImpl,ImageRepository imageRepository) {
         this.adsRepository = adsRepository;
         this.adsCommentRepository = adsCommentRepository;
         this.userRepository = userRepository;
         this.imageServiceImpl = imageServiceImpl;
+        this.imageRepository = imageRepository;
     }
     @Override
     public ResponseWrapperAdsDto getAllAds() {
@@ -50,9 +55,6 @@ public class AdsServiceImpl  implements AdsService {
 
     @Override
     public AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication) {
-//        Ads ads = mapper.createAdsToAds(createAds);
-//        adsRepository.save(ads);
-//        return mapper.adsToAdsDto(ads);
         Ads ads = mapper.createAdsToAds(createAds);
         ads.setAuthor(userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
         ads.setImage("/image/" + imageServiceImpl.saveImage(file));
@@ -69,14 +71,16 @@ public class AdsServiceImpl  implements AdsService {
         if (!adsCommentDtoList.isEmpty()) {
             responseWrapperAdsComment.setCount(adsCommentDtoList.size());
             responseWrapperAdsComment.setResults(adsCommentDtoList);
+        }else{
+            responseWrapperAdsComment.setResults(Collections.emptyList());
         }
         return responseWrapperAdsComment;
     }
 
     @Override
-    public CommentDto addAdsComment(int pk, CommentDto adsCommentDto) {
+    public CommentDto addAdsComment(int pk, CommentDto adsCommentDto, String username) {
         Comment adsComment = new Comment();
-        adsComment.setAuthor(userRepository.findById(1).orElseThrow(UserNotFoundException::new));
+        adsComment.setAuthor(userRepository.findUserByEmail(username).orElseThrow(UserNotFoundException::new));
         adsComment.setPk(adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new));
         adsComment.setCreatedAt(OffsetDateTime.now().toString());
         adsComment.setText(adsCommentDto.getText());
@@ -100,19 +104,32 @@ public class AdsServiceImpl  implements AdsService {
         return fullAds;
     }
     @Override
-    public AdsDto removeAds(int id) {
+    public AdsDto removeAds(int id, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())) {
             adsRepository.deleteById(id);
+            String[] ls = ads.getImage().split("/");
+            imageRepository.deleteById(ls[2]);
             return mapper.adsToAdsDto(ads);
+        } else {
+            throw new NoAccessException();
+        }
     }
     @Override
-    public AdsDto updateAds(int id, CreateAdsDto adsDto) {
+    public AdsDto updateAds(int id, CreateAdsDto adsDto, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())) {
             ads.setTitle(adsDto.getTitle());
             ads.setPrice(adsDto.getPrice());
             ads.setDescription(adsDto.getDescription());
+            adsRepository.save(ads);
         AdsDto adsDtoRen = mapper.adsToAdsDto(ads);
             return adsDtoRen;
+        } else {
+            throw new NoAccessException();
+        }
     }
     @Override
     public CommentDto getAdsComment(int pk, int id) {
@@ -121,22 +138,32 @@ public class AdsServiceImpl  implements AdsService {
         return mapper.adsCommentToAdsCommentDto(adsComment);
     }
     @Override
-    public CommentDto deleteAdsComment(int pk, int id) {
-        Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
-            adsCommentRepository.deleteById(id);
-            return mapper.adsCommentToAdsCommentDto(adsComment);
-
-    }
-    @Override
-    public CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto) {
+    public CommentDto deleteAdsComment(int pk, int id, Authentication authentication) {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
         Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())) {
+            adsCommentRepository.deleteById(id);
+            return mapper.adsCommentToAdsCommentDto(adsComment);
+        } else {
+            throw new NoAccessException();
+        }
+    }
+    @Override
+    public CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication) {
+        Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
+        Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())) {
             adsComment.setAuthor(userRepository.findById(adsCommentDto.getAuthor()).orElseThrow(UserNotFoundException::new));
             adsComment.setPk(ads);
             adsComment.setText(adsCommentDto.getText());
             adsComment.setCreatedAt(OffsetDateTime.now().toString());
             adsCommentRepository.save(adsComment);
             return adsCommentDto;
+        } else {
+            throw new NoAccessException();
+        }
 
     }
     @Override
