@@ -45,6 +45,9 @@ public class UserController {
         }
 
     }
+    /**
+     * Получение текущего пользователя
+     */
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

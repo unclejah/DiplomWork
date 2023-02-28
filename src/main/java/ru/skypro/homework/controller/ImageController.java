@@ -21,7 +21,7 @@ public class ImageController {
 
     /**
      * Загрузка картинки для объявления с указанием идентификатора объявления
-
+*   нафига нужен этот метод?
      */
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

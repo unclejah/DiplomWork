@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * Account login by username and password
+     * Авторизация по логину и паролю
      */
     @Override
     public boolean login(String userName, String password) {
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     /**
-     * New user registration
+     * Создание нового пользователя
      */
     @Override
     public boolean register(RegisterReq regReq, RoleDto role) {
@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
     /**
-     * Change user's password
+     * Изменение пароля пользователя
      */
     @Override
     public boolean setPassword(NewPasswordDto newPassword, Principal principal) {

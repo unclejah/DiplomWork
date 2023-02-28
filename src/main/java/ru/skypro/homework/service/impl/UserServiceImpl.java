@@ -21,7 +21,7 @@ public class UserServiceImpl  implements UserService {
     }
 
     /**
-     * Update user
+     * Обновление пользователя
      */
     @Override
     public UserDto updateUser(UserDto userDto, Principal principal) {
@@ -36,7 +36,9 @@ public class UserServiceImpl  implements UserService {
         userRepository.save(user);
         return userDto;
     }
-
+    /**
+     * Получение пользователя
+     */
     @Override
     public UserDto getUser(String email) {
         User user = userRepository.findByEmail(email);

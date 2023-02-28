@@ -1,11 +1,8 @@
 package ru.skypro.homework.service.impl;
 
 import org.mapstruct.factory.Mappers;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
@@ -41,6 +38,9 @@ public class AdsServiceImpl  implements AdsService {
         this.imageServiceImpl = imageServiceImpl;
         this.imageRepository = imageRepository;
     }
+    /**
+     * Получение всех объявлений
+     */
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
@@ -55,7 +55,9 @@ public class AdsServiceImpl  implements AdsService {
         }
         return responseWrapperAds;
     }
-
+    /**
+     * Создание объявления
+     */
     @Override
     public AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication) {
         Ads ads = mapper.createAdsToAds(createAds);
@@ -64,7 +66,9 @@ public class AdsServiceImpl  implements AdsService {
         adsRepository.save(ads);
         return mapper.adsToAdsDto(ads);
     }
-
+    /**
+     * Получение списка комментариев к объявлению
+     */
     @Override
     public ResponseWrapperCommentDto getAdsComments(int pk) {
         Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
@@ -79,7 +83,9 @@ public class AdsServiceImpl  implements AdsService {
         }
         return responseWrapperAdsComment;
     }
-
+    /**
+     *Добавление комментария
+     */
     @Override
     public CommentDto addAdsComment(int pk, CommentDto adsCommentDto, String username) {
         Comment adsComment = new Comment();
@@ -90,6 +96,9 @@ public class AdsServiceImpl  implements AdsService {
         adsCommentRepository.save(adsComment);
         return adsCommentDto;
     }
+    /**
+     * Получения объявления по номеру
+     */
     @Override
     public FullAdsDto getAds(int id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
@@ -106,6 +115,9 @@ public class AdsServiceImpl  implements AdsService {
         fullAds.setTitle(ads.getTitle());
         return fullAds;
     }
+    /**
+     * Удаление объявления
+     */
     @Override
     public AdsDto removeAds(int id, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
@@ -119,6 +131,9 @@ public class AdsServiceImpl  implements AdsService {
             throw new NoAccessException();
         }
     }
+    /**
+     * Обновление объявления
+     */
     @Override
     public AdsDto updateAds(int id, CreateAdsDto adsDto, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
@@ -140,6 +155,9 @@ public class AdsServiceImpl  implements AdsService {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
         return mapper.adsCommentToAdsCommentDto(adsComment);
     }
+    /**
+     * Удаление комментария
+     */
     @Override
     public CommentDto deleteAdsComment(int pk, int id, Authentication authentication) {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
@@ -152,6 +170,9 @@ public class AdsServiceImpl  implements AdsService {
             throw new NoAccessException();
         }
     }
+    /**
+     * Обновление комментария
+     */
     @Override
     public CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication) {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);

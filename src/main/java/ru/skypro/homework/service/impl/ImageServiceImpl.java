@@ -22,7 +22,9 @@ public class ImageServiceImpl {
     public ImageServiceImpl(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
     }
-
+    /**
+     * Возврат картинки во фронт
+     */
     public byte[] downloadImage(String id) {
         Optional<Image> imageOptional = imageRepository.findById(id);
         byte[] images = null;
@@ -32,7 +34,9 @@ public class ImageServiceImpl {
         return images;
     }
 
-
+    /**
+     * Сохранение картинки
+     */
     public String saveImage(MultipartFile file) {
         Image image = new Image();
         try {
