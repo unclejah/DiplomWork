@@ -1,8 +1,11 @@
 package ru.skypro.homework.service.impl;
 
 import org.mapstruct.factory.Mappers;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.entity.Ads;
@@ -166,6 +169,14 @@ public class AdsServiceImpl  implements AdsService {
         }
 
     }
+
+    public AdsDto uploadAdsImage( MultipartFile file, Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        ads.setImage("/image/" + imageServiceImpl.saveImage(file));
+        adsRepository.save(ads);
+        return mapper.adsToAdsDto(ads);
+    }
+
     @Override
     public ResponseWrapperAdsDto getAdsMe(Principal principal) {
         User user = userRepository.findByEmail(principal.getName());

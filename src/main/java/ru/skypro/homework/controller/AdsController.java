@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.impl.ImageServiceImpl;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -22,9 +23,10 @@ import java.util.Collections;
 @RestController
 public class AdsController {
     private final AdsService adsService;
-
-    public AdsController(AdsService adsService) {
+    private final ImageServiceImpl imageServiceImpl;
+    public AdsController(AdsService adsService, ImageServiceImpl imageServiceImpl) {
         this.adsService = adsService;
+        this.imageServiceImpl = imageServiceImpl;
     }
 
       /**
@@ -185,4 +187,17 @@ public class AdsController {
             }
             return ResponseEntity.ok(Ads);
         }
+    /**
+     * обновление картинки пользователя
+     */
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdsDto> uploadAdsImage(@RequestParam MultipartFile image, @PathVariable("id") String id) {
+        int id2 = Integer.parseInt(id);
+        AdsDto adsDto = adsService.uploadAdsImage(image, id2);
+        if (adsDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(adsDto);
+    }
 }

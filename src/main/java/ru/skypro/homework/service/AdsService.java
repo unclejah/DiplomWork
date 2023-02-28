@@ -18,4 +18,5 @@ public interface AdsService {
     CommentDto deleteAdsComment(int pk, int id, Authentication authentication);
     CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication);
     ResponseWrapperAdsDto getAdsMe(Principal principal);
+    AdsDto uploadAdsImage( MultipartFile file, Integer id);
 }
