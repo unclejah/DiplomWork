@@ -34,7 +34,8 @@ public class UserServiceImpl  implements UserService {
         user.setPhone(userDto.getPhone());
         user.setImage(userDto.getImage());
         userRepository.save(user);
-        return userDto;
+        return mapper.userToUserDto(user);
+//        return userDto;
     }
     /**
      * Получение пользователя

@@ -20,16 +20,6 @@ public class ImageController {
     }
 
     /**
-     * Загрузка картинки для объявления с указанием идентификатора объявления
-*   нафига нужен этот метод?
-     */
-
-    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadAdsImage(@PathVariable  Long id,
-                                                       @RequestParam MultipartFile image) {
-        return ResponseEntity.ok().build();
-    }
-    /**
      * Получение аватара пользовател
     **/
     @GetMapping(value = "/user/{id}", produces = {MediaType.IMAGE_PNG_VALUE})

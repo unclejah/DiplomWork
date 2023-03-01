@@ -62,6 +62,9 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Principal principal) {
         UserDto user = userService.updateUser(userDto, principal);
+        user.setCity("");
+        user.setRegDate("");
+        user.setImage("");
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

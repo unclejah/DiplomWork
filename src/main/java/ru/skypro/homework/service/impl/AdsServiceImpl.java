@@ -94,7 +94,8 @@ public class AdsServiceImpl  implements AdsService {
         adsComment.setCreatedAt(OffsetDateTime.now().toString());
         adsComment.setText(adsCommentDto.getText());
         adsCommentRepository.save(adsComment);
-        return adsCommentDto;
+//        adsCommentDto.setId(adsComment.getId());
+        return mapper.adsCommentToAdsCommentDto(adsComment);
     }
     /**
      * Получения объявления по номеру
@@ -123,6 +124,7 @@ public class AdsServiceImpl  implements AdsService {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
                 || authentication.getName().equals(ads.getAuthor().getEmail())) {
+            adsCommentRepository.deleteByAdsId(id);
             adsRepository.deleteById(id);
             String[] ls = ads.getImage().split("/");
             imageRepository.deleteById(ls[2]);
