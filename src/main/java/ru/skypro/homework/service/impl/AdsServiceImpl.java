@@ -122,8 +122,7 @@ public class AdsServiceImpl  implements AdsService {
     @Override
     public AdsDto removeAds(int id, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
-                || authentication.getName().equals(ads.getAuthor().getEmail())) {
+        if (checkRole(ads, authentication)) {
             adsCommentRepository.deleteByAdsId(id);
             adsRepository.deleteById(id);
             String[] ls = ads.getImage().split("/");
@@ -139,8 +138,7 @@ public class AdsServiceImpl  implements AdsService {
     @Override
     public AdsDto updateAds(int id, CreateAdsDto adsDto, Authentication authentication) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
-        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
-                || authentication.getName().equals(ads.getAuthor().getEmail())) {
+        if (checkRole(ads, authentication)) {
             ads.setTitle(adsDto.getTitle());
             ads.setPrice(adsDto.getPrice());
             ads.setDescription(adsDto.getDescription());
@@ -164,8 +162,7 @@ public class AdsServiceImpl  implements AdsService {
     public CommentDto deleteAdsComment(int pk, int id, Authentication authentication) {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
         Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
-        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
-                || authentication.getName().equals(ads.getAuthor().getEmail())) {
+        if (checkRole(ads, authentication)) {
             adsCommentRepository.deleteById(id);
             return mapper.adsCommentToAdsCommentDto(adsComment);
         } else {
@@ -179,8 +176,7 @@ public class AdsServiceImpl  implements AdsService {
     public CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication) {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
         Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
-        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
-                || authentication.getName().equals(ads.getAuthor().getEmail())) {
+        if (checkRole(ads, authentication)) {
             adsComment.setAuthor(userRepository.findById(adsCommentDto.getAuthor()).orElseThrow(UserNotFoundException::new));
             adsComment.setPk(ads);
             adsComment.setText(adsCommentDto.getText());
@@ -205,5 +201,12 @@ public class AdsServiceImpl  implements AdsService {
         User user = userRepository.findByEmail(principal.getName());
         List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
         return getResponseWrapperAds(adsList);
+    }
+    private Boolean checkRole(Ads ads, Authentication authentication){
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())){
+            return true;
+        }
+        return false;
     }
 }
