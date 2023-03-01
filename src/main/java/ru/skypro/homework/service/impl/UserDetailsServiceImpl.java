@@ -6,13 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -32,10 +31,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-                mapRolesToAuthorities(user.getRoles()));
+                mapRolesToAuthorities(user.getRole()));
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(String role) {
+
+        return Collections.singleton(new SimpleGrantedAuthority(role));
     }
 }

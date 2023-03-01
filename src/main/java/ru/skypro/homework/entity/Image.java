@@ -13,7 +13,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "ads_images")
+@Table(name = "images")
 public class Image implements Serializable {
     @Id
     @Column(name = "id", unique = true)
