@@ -30,12 +30,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User '%s' not found", username));
         }
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+    return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
                 mapRolesToAuthorities(user.getRole()));
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(String role) {
 
-        return Collections.singleton(new SimpleGrantedAuthority(role));
+    return Collections.singleton(new SimpleGrantedAuthority(role));
     }
 }

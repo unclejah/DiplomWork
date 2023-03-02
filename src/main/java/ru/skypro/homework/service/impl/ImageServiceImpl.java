@@ -28,7 +28,7 @@ public class ImageServiceImpl {
         if (imageOptional.isPresent()) {
             images = imageOptional.get().getData();
         }
-        return images;
+    return images;
     }
 
     /**
@@ -47,6 +47,6 @@ public class ImageServiceImpl {
         image.setFileSize((int) file.getSize());
         image.setMediaType(file.getContentType());
         Image savedImage = imageRepository.saveAndFlush(image);
-        return savedImage.getId();
+    return savedImage.getId();
     }
 }

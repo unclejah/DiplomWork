@@ -22,11 +22,11 @@ import java.util.Collections;
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 public class AdsController {
+
     private final AdsService adsService;
-    private final ImageServiceImpl imageServiceImpl;
+
     public AdsController(AdsService adsService, ImageServiceImpl imageServiceImpl) {
         this.adsService = adsService;
-        this.imageServiceImpl = imageServiceImpl;
     }
 
       /**
@@ -36,10 +36,10 @@ public class AdsController {
     @GetMapping()
     public ResponseEntity<ResponseWrapperAdsDto> getAllAds() {
         ResponseWrapperAdsDto allAds = adsService.getAllAds();
-        if (allAds.getCount() == 0) {
-            allAds.setResults(Collections.emptyList());
-        }
-        return ResponseEntity.ok(allAds);
+            if (allAds.getCount() == 0) {
+                allAds.setResults(Collections.emptyList());
+            }
+    return ResponseEntity.ok(allAds);
     }
 
     /**
@@ -52,10 +52,10 @@ public class AdsController {
     public ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAdsDto createAds,
                                          @RequestPart("image") MultipartFile file) {
         if (createAds == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(adsService.createAds(createAds, file, authentication));
+    return ResponseEntity.ok(adsService.createAds(createAds, file, authentication));
     }
 
     /**
@@ -69,7 +69,7 @@ public class AdsController {
         if (adsComment.getCount() == 0) {
             adsComment.setResults(Collections.emptyList());
         }
-        return ResponseEntity.ok(adsComment);
+    return ResponseEntity.ok(adsComment);
     }
     /**
      * POST <a href="http://localhost:3000/ads">...</a>{ad_pk}/comment
@@ -77,43 +77,43 @@ public class AdsController {
      */
 
     @PostMapping("/{ad_pk}/comments")
-        public ResponseEntity<CommentDto> addComments(@PathVariable("ad_pk")  String adPk,
+    public ResponseEntity<CommentDto> addComments(@PathVariable("ad_pk")  String adPk,
                                                       @RequestBody CommentDto comment) {
-        int pk = Integer.parseInt(adPk);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CommentDto adsComment = adsService.addAdsComment(pk, comment, authentication.getName());
-        if (adsComment == null) {
-            adsComment= new CommentDto();
-        }
-        return ResponseEntity.ok(adsComment);
-        }
+            int pk = Integer.parseInt(adPk);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CommentDto adsComment = adsService.addAdsComment(pk, comment, authentication.getName());
+            if (adsComment == null) {
+                adsComment= new CommentDto();
+            }
+    return ResponseEntity.ok(adsComment);
+    }
     /**
      * Получить объявление по его идентификатору, то-есть по id
      * GET <a href="http://localhost:3000/ads/">...</a>{id}
      **/
 
     @GetMapping("/{id}")
-        public ResponseEntity<FullAdsDto> getFullAd(@PathVariable int id) {
+    public ResponseEntity<FullAdsDto> getFullAd(@PathVariable int id) {
         FullAdsDto fullAds = adsService.getAds(id);
         if (fullAds == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(fullAds);
-        }
+    return ResponseEntity.ok(fullAds);
+    }
     /**
      * Удалить объявление по его идентификатору, то-есть по id.
      * DELETE <a href="http://localhost:3000/ads/{">...</a>id}
      **/
 
     @DeleteMapping("/{id}")
-        public ResponseEntity<AdsDto> removeAds(@PathVariable int id) {
+    public ResponseEntity<AdsDto> removeAds(@PathVariable int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AdsDto adsDto = adsService.removeAds(id, authentication);
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok().build();
-        }
+    return ResponseEntity.ok().build();
+    }
     /** Редактировать объявление по его идентификатору,
      * PUT <a href="http://localhost:3000/ads/">...</a>{id}
      **/
@@ -125,30 +125,30 @@ public class AdsController {
         if (ads == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(adsDto);
-        }
+    return ResponseEntity.ok(adsDto);
+    }
     /**
      * POST <a href="http://localhost:3000/ads">...</a>{ad_pk}/comment
      * Получение комментария к объявлению.
      */
 
     @GetMapping("/{ad_pk}/comments/{id}")
-    public ResponseEntity<CommentDto> getAdsComment(@PathVariable("ad_pk") String adPk,
-                                                    @PathVariable int id) {
+    public ResponseEntity<CommentDto> getAdsComment(@PathVariable("ad_pk") String adPk, @PathVariable int id) {
         int pk = Integer.parseInt(adPk);
         CommentDto adsCommentDto = adsService.getAdsComment(pk, id);
         if (adsCommentDto == null) {
             adsCommentDto= new CommentDto();
         }
-        return ResponseEntity.ok(adsCommentDto);
-        }
+    return ResponseEntity.ok(adsCommentDto);
+    }
+
     /**
      * DELETE <a href="http://localhost:3000/ads">...</a>{ad_pk}/comment/{id}
      * Удаление комментария к объявлению.
      */
 
     @DeleteMapping("/{ad_pk}/comments/{id}")
-        public ResponseEntity<Void> deleteComment(@PathVariable("ad_pk") String adPk,
+    public ResponseEntity<Void> deleteComment(@PathVariable("ad_pk") String adPk,
                                                          @PathVariable int id) {
         int pk = Integer.parseInt(adPk);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -156,8 +156,9 @@ public class AdsController {
         if (adsCommentDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok().build();
-        }
+    return ResponseEntity.ok().build();
+    }
+
     /**
      * POST <a href="http://localhost:3000/ads/">...</a>{ad_pk}/comment
      * Обновление отзыва(комментария) к объявлению. Объявление должно существовать.
@@ -173,20 +174,20 @@ public class AdsController {
         if (adsComment == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(adsComment);
-        }
+    return ResponseEntity.ok(adsComment);
+    }
     /**
      * Получить все объявления автора GET <a href="http://localhost:3000/ads">...</a>
      **/
 
-        @GetMapping("/me")
-        public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(Principal principal) {
+     @GetMapping("/me")
+     public ResponseEntity<ResponseWrapperAdsDto> getAdsMe(Principal principal) {
             ResponseWrapperAdsDto Ads = adsService.getAdsMe(principal);
             if (Ads.getCount() == 0) {
                 Ads.setResults(Collections.emptyList());
             }
-            return ResponseEntity.ok(Ads);
-        }
+     return ResponseEntity.ok(Ads);
+     }
     /**
      * обновление картинки пользователя
      */
@@ -198,6 +199,6 @@ public class AdsController {
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(adsDto);
+    return ResponseEntity.ok(adsDto);
     }
 }

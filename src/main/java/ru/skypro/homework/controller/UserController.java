@@ -52,7 +52,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDto user = userService.getUser(authentication.getName());
-        return ResponseEntity.ok(user);
+    return ResponseEntity.ok(user);
     }
 
     /** Редактировать пользователя,
@@ -81,7 +81,7 @@ public class UserController {
         UserDto user = userService.getUser(principal.getName());
         user.setImage("/image/user/" + imageService.saveImage(image));
         userService.updateUser(user, principal);
-        return ResponseEntity.ok().build();
+    return ResponseEntity.ok().build();
     }
 
 

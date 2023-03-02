@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     public boolean login(String userName, String password) {
         UserDetails userDetails = manager.loadUserByUsername(userName);
         String encryptedPassword = userDetails.getPassword();
-        return encoder.matches(password, encryptedPassword);
+    return encoder.matches(password, encryptedPassword);
     }
 
     /**
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPhone(regReq.getPhone());
         user.setRole("ROLE_"+role.name());
         userRepository.save(user);
-        return true;
+    return true;
     }
     /**
      * Изменение пароля пользователя
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(userFromDB);
             return true;
         }
-        return false;
+    return false;
     }
 
 
