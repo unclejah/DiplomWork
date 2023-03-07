@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
+import ru.skypro.homework.dto.UserDataDto;
 import ru.skypro.homework.dto.UserDto;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.service.UserService;
@@ -60,16 +61,18 @@ public class UserController {
      **/
 
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, Principal principal) {
+    public ResponseEntity<UserDataDto> updateUser(@RequestBody UserDto userDto, Principal principal) {
         UserDto user = userService.updateUser(userDto, principal);
-        user.setCity("");
-        user.setRegDate("");
-        user.setImage("");
+        UserDataDto userDataDto = new UserDataDto();
+        userDataDto.setData(user);
+//        user.setCity("");
+//        user.setRegDate("");
+//        user.setImage("");
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userDataDto);
     }
 
     /**
