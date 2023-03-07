@@ -1,17 +1,17 @@
 package ru.skypro.homework.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
 import ru.skypro.homework.service.AdsService;
+import ru.skypro.homework.service.impl.ImageServiceImpl;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -23,9 +23,10 @@ import java.util.Collections;
 @RestController
 public class AdsController {
     private final AdsService adsService;
-
-    public AdsController(AdsService adsService) {
+    private final ImageServiceImpl imageServiceImpl;
+    public AdsController(AdsService adsService, ImageServiceImpl imageServiceImpl) {
         this.adsService = adsService;
+        this.imageServiceImpl = imageServiceImpl;
     }
 
       /**
@@ -47,6 +48,7 @@ public class AdsController {
      */
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ResponseEntity<AdsDto> addAds(@RequestPart("properties") CreateAdsDto createAds,
                                          @RequestPart("image") MultipartFile file) {
         if (createAds == null) {
@@ -65,7 +67,7 @@ public class AdsController {
         int pk = Integer.parseInt(adPk);
         ResponseWrapperCommentDto adsComment = adsService.getAdsComments(pk);
         if (adsComment.getCount() == 0) {
-            return ResponseEntity.notFound().build();
+            adsComment.setResults(Collections.emptyList());
         }
         return ResponseEntity.ok(adsComment);
     }
@@ -78,9 +80,10 @@ public class AdsController {
         public ResponseEntity<CommentDto> addComments(@PathVariable("ad_pk")  String adPk,
                                                       @RequestBody CommentDto comment) {
         int pk = Integer.parseInt(adPk);
-        CommentDto adsComment = adsService.addAdsComment(pk, comment);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CommentDto adsComment = adsService.addAdsComment(pk, comment, authentication.getName());
         if (adsComment == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            adsComment= new CommentDto();
         }
         return ResponseEntity.ok(adsComment);
         }
@@ -104,7 +107,8 @@ public class AdsController {
 
     @DeleteMapping("/{id}")
         public ResponseEntity<AdsDto> removeAds(@PathVariable int id) {
-        AdsDto adsDto = adsService.removeAds(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AdsDto adsDto = adsService.removeAds(id, authentication);
         if (adsDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -116,7 +120,8 @@ public class AdsController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<AdsDto> updateAds(@PathVariable int id, @RequestBody CreateAdsDto ads) {
-        AdsDto adsDto = adsService.updateAds(id, ads);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AdsDto adsDto = adsService.updateAds(id, ads, authentication);
         if (ads == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -133,7 +138,7 @@ public class AdsController {
         int pk = Integer.parseInt(adPk);
         CommentDto adsCommentDto = adsService.getAdsComment(pk, id);
         if (adsCommentDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            adsCommentDto= new CommentDto();
         }
         return ResponseEntity.ok(adsCommentDto);
         }
@@ -144,9 +149,10 @@ public class AdsController {
 
     @DeleteMapping("/{ad_pk}/comments/{id}")
         public ResponseEntity<Void> deleteComment(@PathVariable("ad_pk") String adPk,
-        @PathVariable int id) {
+                                                         @PathVariable int id) {
         int pk = Integer.parseInt(adPk);
-        CommentDto adsCommentDto = adsService.deleteAdsComment(pk, id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CommentDto adsCommentDto = adsService.deleteAdsComment(pk, id, authentication);
         if (adsCommentDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -162,7 +168,8 @@ public class AdsController {
                                                        @PathVariable int id,
                                                        @RequestBody CommentDto comment) {
         int pk = Integer.parseInt(adPk);
-        CommentDto adsComment = adsService.updateAdsComment(pk, id, comment);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CommentDto adsComment = adsService.updateAdsComment(pk, id, comment, authentication);
         if (adsComment == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -180,4 +187,17 @@ public class AdsController {
             }
             return ResponseEntity.ok(Ads);
         }
+    /**
+     * обновление картинки пользователя
+     */
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdsDto> uploadAdsImage(@RequestParam MultipartFile image, @PathVariable("id") String id) {
+        int id2 = Integer.parseInt(id);
+        AdsDto adsDto = adsService.uploadAdsImage(image, id2);
+        if (adsDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(adsDto);
+    }
 }

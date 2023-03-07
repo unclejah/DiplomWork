@@ -10,12 +10,13 @@ public interface AdsService {
     ResponseWrapperAdsDto getAllAds();
     AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication);
     ResponseWrapperCommentDto getAdsComments(int pk);
-    CommentDto addAdsComment(int pk, CommentDto adsCommentDto);
+    CommentDto addAdsComment(int pk, CommentDto adsCommentDto, String username);
     FullAdsDto getAds(int id);
-    AdsDto removeAds(int id);
-    AdsDto updateAds(int id, CreateAdsDto adsDto);
+    AdsDto removeAds(int id, Authentication authentication);
+    AdsDto updateAds(int id, CreateAdsDto adsDto, Authentication authentication);
     CommentDto getAdsComment(int pk, int id);
-    CommentDto deleteAdsComment(int pk, int id);
-    CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto);
+    CommentDto deleteAdsComment(int pk, int id, Authentication authentication);
+    CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication);
     ResponseWrapperAdsDto getAdsMe(Principal principal);
+    AdsDto uploadAdsImage( MultipartFile file, Integer id);
 }

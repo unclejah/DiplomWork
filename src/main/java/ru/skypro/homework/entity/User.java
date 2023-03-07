@@ -21,9 +21,9 @@ public class User {
     private String image;
     private String password;
     @OneToMany
-    List<Ads> adsList;
+    private List<Ads> adsList;
     @OneToMany
-    List<Comment> commentList;
+    private List<Comment> commentList;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",

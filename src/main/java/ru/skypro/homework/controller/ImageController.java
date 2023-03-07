@@ -20,20 +20,16 @@ public class ImageController {
     }
 
     /**
-     * Загрузка картинки для объявления с указанием идентификатора объявления
-
-     */
-
-    @PostMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadAdsImage(@PathVariable  Long id,
-                                                       @RequestParam MultipartFile image) {
-        return ResponseEntity.ok().build();
-    }
+     * Получение аватара пользовател
+    **/
     @GetMapping(value = "/user/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getAdsAvatar(@PathVariable("id") String id) {
 
         return ResponseEntity.ok().body(imageServiceImpl.downloadImage(id));
     }
+    /**
+     * Получение картинки объявления
+     **/
     @GetMapping(value = "/{id}", produces = {MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getAdsAvatar2(@PathVariable("id") String id) {
 
