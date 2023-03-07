@@ -9,4 +9,6 @@ public class CommentDto {
     private int pk;
     private String text;
     private int id;
+    private int adId;
+    private int commentId;
 }

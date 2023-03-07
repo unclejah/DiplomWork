@@ -34,8 +34,8 @@ public class UserServiceImpl  implements UserService {
         user.setPhone(userDto.getPhone());
         user.setImage(userDto.getImage());
         userRepository.save(user);
-        return mapper.userToUserDto(user);
-//        return userDto;
+    return mapper.userToUserDto(user);
+
     }
     /**
      * Получение пользователя
@@ -46,7 +46,7 @@ public class UserServiceImpl  implements UserService {
         if (user == null) {
             throw new UserNotFoundException();
         }
-        return mapper.userToUserDto(user);
+    return mapper.userToUserDto(user);
     }
 
 }

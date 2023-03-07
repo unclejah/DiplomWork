@@ -7,29 +7,22 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.RegisterReq;
 import ru.skypro.homework.dto.RoleDto;
-import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.repository.RoleRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsServiceImpl manager;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
 
-    public AuthServiceImpl(UserDetailsServiceImpl manager, UserRepository userRepository, RoleRepository roleRepository) {
+    public AuthServiceImpl(UserDetailsServiceImpl manager, UserRepository userRepository) {
         this.manager = manager;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.encoder = new BCryptPasswordEncoder();
     }
 
@@ -40,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     public boolean login(String userName, String password) {
         UserDetails userDetails = manager.loadUserByUsername(userName);
         String encryptedPassword = userDetails.getPassword();
-        return encoder.matches(password, encryptedPassword);
+    return encoder.matches(password, encryptedPassword);
     }
 
     /**
@@ -58,18 +51,9 @@ public class AuthServiceImpl implements AuthService {
         user.setFirstName(regReq.getFirstName());
         user.setLastName(regReq.getLastName());
         user.setPhone(regReq.getPhone());
-        Role userRole = new Role();
-        userRole.setRoleName("ROLE_" + role.name());
-        Set<Role> roles = roleRepository.findAll().stream()
-                .filter(r -> r.getRoleName().equals(userRole.getRoleName()))
-                .collect(Collectors.toSet());
-        if (!roles.isEmpty()) {
-            user.setRoles(roles);
-        } else {
-            user.setRoles(Collections.singleton(userRole));
-        }
+        user.setRole("ROLE_"+role.name());
         userRepository.save(user);
-        return true;
+    return true;
     }
     /**
      * Изменение пароля пользователя
@@ -84,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.save(userFromDB);
             return true;
         }
-        return false;
+    return false;
     }
 
 

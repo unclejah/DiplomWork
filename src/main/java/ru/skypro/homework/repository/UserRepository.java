@@ -7,7 +7,7 @@ import ru.skypro.homework.entity.User;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    User findByFirstName(String username);
+
     @Query(value = "SELECT * FROM users WHERE email = ?1", nativeQuery = true)
     User findByUsername(String username);
     User findByEmail(String email);
