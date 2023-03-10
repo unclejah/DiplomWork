@@ -13,7 +13,7 @@ public interface UserMapper {
 
     List<UserDto> userToUserDto(List<User> userList);
 
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "role", ignore = true)
     @Mapping(target = "adsList", ignore = true)
     @Mapping(target = "commentList", ignore = true)
     @Mapping(target = "password", ignore = true)

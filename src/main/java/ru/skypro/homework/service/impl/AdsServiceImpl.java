@@ -31,6 +31,7 @@ public class AdsServiceImpl  implements AdsService {
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
     private final ImageServiceImpl imageServiceImpl;
+
     public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository, ImageServiceImpl imageServiceImpl,ImageRepository imageRepository) {
         this.adsRepository = adsRepository;
         this.adsCommentRepository = adsCommentRepository;
@@ -44,16 +45,14 @@ public class AdsServiceImpl  implements AdsService {
     @Override
     public ResponseWrapperAdsDto getAllAds() {
         List<Ads> adsList = adsRepository.findAll();
-        return getResponseWrapperAds(adsList);
+    return getResponseWrapperAds(adsList);
     }
     private ResponseWrapperAdsDto getResponseWrapperAds(List<Ads> adsList) {
         List<AdsDto> adsDtoList = mapper.adsToAdsDto(adsList);
         ResponseWrapperAdsDto responseWrapperAds = new ResponseWrapperAdsDto();
-        if (!adsDtoList.isEmpty()) {
             responseWrapperAds.setCount(adsDtoList.size());
             responseWrapperAds.setResults(adsDtoList);
-        }
-        return responseWrapperAds;
+    return responseWrapperAds;
     }
     /**
      * Создание объявления
@@ -64,7 +63,7 @@ public class AdsServiceImpl  implements AdsService {
         ads.setAuthor(userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
         ads.setImage("/image/" + imageServiceImpl.saveImage(file));
         adsRepository.save(ads);
-        return mapper.adsToAdsDto(ads);
+    return mapper.adsToAdsDto(ads);
     }
     /**
      * Получение списка комментариев к объявлению
@@ -75,13 +74,9 @@ public class AdsServiceImpl  implements AdsService {
         List<Comment> adsCommentList = adsCommentRepository.findByPk(ads);
         List<CommentDto> adsCommentDtoList = mapper.adsCommentToAdsCommentDto(adsCommentList);
         ResponseWrapperCommentDto responseWrapperAdsComment = new ResponseWrapperCommentDto();
-        if (!adsCommentDtoList.isEmpty()) {
             responseWrapperAdsComment.setCount(adsCommentDtoList.size());
             responseWrapperAdsComment.setResults(adsCommentDtoList);
-        }else{
-            responseWrapperAdsComment.setResults(Collections.emptyList());
-        }
-        return responseWrapperAdsComment;
+    return responseWrapperAdsComment;
     }
     /**
      *Добавление комментария
@@ -94,8 +89,7 @@ public class AdsServiceImpl  implements AdsService {
         adsComment.setCreatedAt(OffsetDateTime.now().toString());
         adsComment.setText(adsCommentDto.getText());
         adsCommentRepository.save(adsComment);
-//        adsCommentDto.setId(adsComment.getId());
-        return mapper.adsCommentToAdsCommentDto(adsComment);
+    return mapper.adsCommentToAdsCommentDto(adsComment);
     }
     /**
      * Получения объявления по номеру
@@ -114,7 +108,7 @@ public class AdsServiceImpl  implements AdsService {
         fullAds.setPk(ads.getPk());
         fullAds.setPrice(ads.getPrice());
         fullAds.setTitle(ads.getTitle());
-        return fullAds;
+    return fullAds;
     }
     /**
      * Удаление объявления
@@ -153,7 +147,7 @@ public class AdsServiceImpl  implements AdsService {
     public CommentDto getAdsComment(int pk, int id) {
         adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
-        return mapper.adsCommentToAdsCommentDto(adsComment);
+    return mapper.adsCommentToAdsCommentDto(adsComment);
     }
     /**
      * Удаление комментария
@@ -188,25 +182,29 @@ public class AdsServiceImpl  implements AdsService {
         }
 
     }
-
+    /**
+     * Обновление картинки объявления
+     */
     public AdsDto uploadAdsImage( MultipartFile file, Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
         ads.setImage("/image/" + imageServiceImpl.saveImage(file));
         adsRepository.save(ads);
         return mapper.adsToAdsDto(ads);
     }
-
+    /**
+     * Получения списка объявления пользователя
+     */
     @Override
     public ResponseWrapperAdsDto getAdsMe(Principal principal) {
         User user = userRepository.findByEmail(principal.getName());
         List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
-        return getResponseWrapperAds(adsList);
+    return getResponseWrapperAds(adsList);
     }
-    private Boolean checkRole(Ads ads, Authentication authentication){
+    private boolean checkRole(Ads ads, Authentication authentication){
         if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
                 || authentication.getName().equals(ads.getAuthor().getEmail())){
             return true;
         }
-        return false;
+    return false;
     }
 }

@@ -1,7 +1,5 @@
 package ru.skypro.homework.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.entity.Image;
@@ -16,7 +14,6 @@ import java.util.UUID;
 @Transactional
 public class ImageServiceImpl {
 
-    private final Logger logger = LoggerFactory.getLogger(ImageServiceImpl.class);
     private final ImageRepository imageRepository;
 
     public ImageServiceImpl(ImageRepository imageRepository) {
@@ -31,7 +28,7 @@ public class ImageServiceImpl {
         if (imageOptional.isPresent()) {
             images = imageOptional.get().getData();
         }
-        return images;
+    return images;
     }
 
     /**
@@ -50,6 +47,6 @@ public class ImageServiceImpl {
         image.setFileSize((int) file.getSize());
         image.setMediaType(file.getContentType());
         Image savedImage = imageRepository.saveAndFlush(image);
-        return savedImage.getId();
+    return savedImage.getId();
     }
 }

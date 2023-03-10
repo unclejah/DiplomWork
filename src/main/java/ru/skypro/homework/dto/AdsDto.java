@@ -9,4 +9,5 @@ public class AdsDto {
     private int pk;
     private int price;
     private String title;
+    private String description;
 }

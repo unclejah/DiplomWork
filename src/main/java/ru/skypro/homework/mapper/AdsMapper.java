@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper
 public interface AdsMapper {
     @Mapping(source = "author.id", target = "author")
+    @Mapping(source = "description", target = "description")
     AdsDto adsToAdsDto(Ads ads);
 
     List<AdsDto> adsToAdsDto(List<Ads> ads);
@@ -28,8 +29,7 @@ public interface AdsMapper {
     Ads createAdsToAds(CreateAdsDto createAds);
 
     @Mapping(source = "author.id", target = "author")
-    @Mapping(source = "pk.pk", target = "pk")
-    @Mapping(source = "id", target = "id")
+    @Mapping(source = "id", target = "pk")
     CommentDto adsCommentToAdsCommentDto(Comment adsComment);
 
     List<CommentDto> adsCommentToAdsCommentDto(List<Comment> adsComment);

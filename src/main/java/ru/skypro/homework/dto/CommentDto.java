@@ -8,5 +8,7 @@ public class CommentDto {
     private String createdAt;
     private int pk;
     private String text;
-    private int id;
+//    private int id;
+//    private int adId;
+//    private int commentId;
 }
