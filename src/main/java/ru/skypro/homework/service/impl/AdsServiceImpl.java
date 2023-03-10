@@ -200,7 +200,7 @@ public class AdsServiceImpl  implements AdsService {
         List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
     return getResponseWrapperAds(adsList);
     }
-    private Boolean checkRole(Ads ads, Authentication authentication){
+    private boolean checkRole(Ads ads, Authentication authentication){
         if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
                 || authentication.getName().equals(ads.getAuthor().getEmail())){
             return true;
