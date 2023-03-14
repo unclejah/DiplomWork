@@ -195,4 +195,15 @@ public class AdsController {
         }
     return ResponseEntity.ok(adsDto);
     }
+    /*
+     * Поиск объявления по заголовку
+     */
+    @GetMapping("/title")
+    public ResponseEntity<ResponseWrapperAdsDto> getAdsByTitle(@RequestParam(required = false) String title) {
+        ResponseWrapperAdsDto responseWrapperAds = adsService.getAdsByTitle(title);
+        if (responseWrapperAds == null) {
+            responseWrapperAds.setResults(Collections.emptyList());
+        }
+        return ResponseEntity.ok(responseWrapperAds);
+    }
 }
