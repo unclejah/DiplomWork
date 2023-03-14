@@ -1,50 +1,75 @@
 package ru.skypro.homework.service.impl;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.RegisterReq;
-import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.dto.RoleDto;
+import ru.skypro.homework.entity.User;
+import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
+
+import java.security.Principal;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final UserDetailsManager manager;
-
+    private final UserDetailsServiceImpl manager;
+    private final UserRepository userRepository;
     private final PasswordEncoder encoder;
 
-    public AuthServiceImpl(UserDetailsManager manager) {
+    public AuthServiceImpl(UserDetailsServiceImpl manager, UserRepository userRepository) {
         this.manager = manager;
+        this.userRepository = userRepository;
         this.encoder = new BCryptPasswordEncoder();
     }
 
+    /**
+     * Авторизация по логину и паролю
+     */
     @Override
     public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
-            return false;
-        }
         UserDetails userDetails = manager.loadUserByUsername(userName);
         String encryptedPassword = userDetails.getPassword();
-        String encryptedPasswordWithoutEncryptionType = encryptedPassword.substring(8);
-        return encoder.matches(password, encryptedPasswordWithoutEncryptionType);
+    return encoder.matches(password, encryptedPassword);
     }
 
+    /**
+     * Создание нового пользователя
+     */
     @Override
-    public boolean register(RegisterReq registerReq, Role role) {
-        if (manager.userExists(registerReq.getUsername())) {
+    public boolean register(RegisterReq regReq, RoleDto role) {
+        User userFromDB = userRepository.findByUsername(regReq.getUsername());
+        if (userFromDB != null) {
             return false;
         }
-        manager.createUser(
-                User.withDefaultPasswordEncoder()
-                        .password(registerReq.getPassword())
-                        .username(registerReq.getUsername())
-                        .roles(role.name())
-                        .build()
-        );
-        return true;
+        User user = new User();
+        user.setEmail(regReq.getUsername());
+        user.setPassword(encoder.encode(regReq.getPassword()));
+        user.setFirstName(regReq.getFirstName());
+        user.setLastName(regReq.getLastName());
+        user.setPhone(regReq.getPhone());
+        user.setRole("ROLE_"+role.name());
+        userRepository.save(user);
+    return true;
     }
+    /**
+     * Изменение пароля пользователя
+     */
+    @Override
+    public boolean setPassword(NewPasswordDto newPassword, Principal principal) {
+        UserDetails userDetails = manager.loadUserByUsername(principal.getName());
+        String encryptedPassword = userDetails.getPassword();
+        if (encoder.matches(newPassword.getCurrentPassword(), encryptedPassword)) {
+            User userFromDB = userRepository.findByUsername(principal.getName());
+            userFromDB.setPassword(encoder.encode(newPassword.getNewPassword()));
+            userRepository.save(userFromDB);
+            return true;
+        }
+    return false;
+    }
+
+
 }

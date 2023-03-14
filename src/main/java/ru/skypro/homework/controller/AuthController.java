@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skypro.homework.dto.LoginReq;
 import ru.skypro.homework.dto.RegisterReq;
-import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.dto.RoleDto;
 import ru.skypro.homework.service.AuthService;
 
-import static ru.skypro.homework.dto.Role.USER;
+import static ru.skypro.homework.dto.RoleDto.USER;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -23,6 +23,9 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * Авторизация пользователя
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
@@ -31,10 +34,12 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-
+    /**
+     * Регистрация пользователя
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req) {
-        Role role = req.getRole() == null ? USER : req.getRole();
+        RoleDto role = req.getRole() == null ? USER : req.getRole();
         if (authService.register(req, role)) {
             return ResponseEntity.ok().build();
         } else {
