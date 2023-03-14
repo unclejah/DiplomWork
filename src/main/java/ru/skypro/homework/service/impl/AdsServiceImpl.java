@@ -171,7 +171,7 @@ public class AdsServiceImpl  implements AdsService {
         Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
         Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
         if (checkRole(ads, authentication)) {
-            adsComment.setAuthor(userRepository.findById(adsCommentDto.getAuthor()).orElseThrow(UserNotFoundException::new));
+            adsComment.setAuthor(userRepository.findById(adsComment.getAuthor().getId()).orElseThrow(UserNotFoundException::new));
             adsComment.setPk(ads);
             adsComment.setText(adsCommentDto.getText());
             adsComment.setCreatedAt(OffsetDateTime.now().toString());
@@ -206,5 +206,13 @@ public class AdsServiceImpl  implements AdsService {
             return true;
         }
     return false;
+    }
+    /**
+     * Поиск списка объявления по названию
+     */
+    @Override
+    public ResponseWrapperAdsDto getAdsByTitle(String title) {
+        List<Ads> adsList = adsRepository.findLikeTitle(title);
+        return getResponseWrapperAds(adsList);
     }
 }
